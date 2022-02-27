@@ -7,13 +7,13 @@ st.set_page_config(layout="wide",page_title='Lahmacun Endeksi', page_icon=':face
 
 st.title('Lahmacun Endeksi')
 
-@st.cache
-def get_data():
-    df = pd.read_excel('yemeksepeti_nuts2.xlsx')
+# @st.cache
+# def get_data():
+#     df = pd.read_excel('yemeksepeti_nuts2.xlsx')
 
-    return df
+#     return df
 
-data = get_data()
+data = pd.read_excel('yemeksepeti_nuts2.xlsx')
 
 data = data.fillna('')
 
