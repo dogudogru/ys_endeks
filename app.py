@@ -1,6 +1,3 @@
-from time import time
-from turtle import heading, title, width
-from prometheus_client import Gauge
 import streamlit as st
 import pandas as pd
 import numpy as np
