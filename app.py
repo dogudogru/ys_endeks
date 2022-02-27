@@ -9,7 +9,7 @@ st.title('Lahmacun Endeksi')
 
 @st.cache
 def get_data():
-    df = pd.read_excel('/yemeksepeti_nuts2.xlsx')
+    df = pd.read_excel('yemeksepeti_nuts2.xlsx')
 
     return df
 
