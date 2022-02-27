@@ -33,7 +33,7 @@ with st.expander('Ağırlıklandırılmış ana veriyi görmek için tıklayın�
     st.write(data)
 
 
-st.markdown("""<a href='www.google.com'>Ağırlıklandırılmış veriyi bu linke tıklayarak indirebilirsiniz</a>""", unsafe_allow_html=True)
+st.markdown("""<a href='https://github.com/dogudogru/ys_endeks/blob/main/yemeksepeti_nuts2.xlsx'>Ağırlıklandırılmış veriyi bu linke tıklayarak indirebilirsiniz (View raw) </a>""", unsafe_allow_html=True)
 
 
 
