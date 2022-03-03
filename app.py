@@ -2,10 +2,12 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from streamlit_echarts import st_echarts
+import streamlit.components.v1 as components
+from PIL import Image
 
 st.set_page_config(layout="wide",page_title='Lahmacun Endeksi', page_icon=':face:')
 
-st.title('Lahmacun Endeksi')
+st.subheader('Lahmacun Endeksi')
 
 @st.cache
 def get_data():
@@ -27,17 +29,15 @@ data['indirimli'] = data['indirimli'].apply(lambda x: float(x))
 data['fiyat'] = data['fiyat'].apply(lambda x: float(x))
 data['sehir_agirlik'] = data['sehir_agirlik'].apply(lambda x: float(x))
 data['sehir_agirlik_d'] = data['sehir_agirlik_d'].apply(lambda x: float(x))
-
-
-with st.expander('Ağırlıklandırılmış ana veriyi görmek için tıklayınız.'):
-    st.write(data)
-
-
-st.markdown("""<a href='https://github.com/dogudogru/ys_endeks/blob/main/yemeksepeti_nuts2.xlsx'>Ağırlıklandırılmış veriyi bu linke tıklayarak indirebilirsiniz (View raw) </a>""", unsafe_allow_html=True)
+data[['ilce_genel', 'mahalle']] = data['ilce'].str.split('(', expand=True)
+data['mahalle'] = data['mahalle'].str.replace(")", "")
 
 
 
-st.markdown('***')
+components.html("""<iframe title="Bölgelere Göre Ortalama Lahmacun Fiyatı" aria-label="Map" id="datawrapper-chart-LtjAS" src="https://datawrapper.dwcdn.net/LtjAS/7/" scrolling="no" frameborder="0" style="width: 0; min-width: 100% !important; border: none;" height="433"></iframe><script type="text/javascript">!function(){"use strict";window.addEventListener("message",(function(e){if(void 0!==e.data["datawrapper-height"]){var t=document.querySelectorAll("iframe");for(var a in e.data["datawrapper-height"])for(var r=0;r<t.length;r++){if(t[r].contentWindow===e.source)t[r].style.height=e.data["datawrapper-height"][a]+"px"}}}))}();
+</script>
+              """, height=850,)
+
 
 #Veri seti sehirlere gore toplam rakam
 
@@ -88,6 +88,7 @@ options_total = {
     {
       "type": "bar",
       "showBackground": 'true',
+      "itemStyle": {"color": '#610007'},
       "data": sehirler["Toplam Lahmacun"].values.tolist()
     }
   ]
@@ -145,6 +146,7 @@ options_fiyat = {
     {
       "type": "bar",
       "showBackground": 'true',
+      "itemStyle": {"color": '#610007'},
       "data": ort_fiyat["fiyat"].values.tolist()
     }
   ]
@@ -152,9 +154,9 @@ options_fiyat = {
 
 st_echarts(options=options_fiyat, height='500px')
 
-sehirler = data['sehir'].unique()
-sehirler = np.append(sehirler, 'Hiçbiri')
-sehir_selector = st.multiselect("Şehir seçiniz", options=sehirler, default='İstanbul')
+sehirler_list = data['sehir'].unique()
+sehirler_list = np.append(sehirler_list, 'Hiçbiri')
+sehir_selector = st.selectbox("Şehir seçiniz", options=sehirler_list)
     
 if 'Hiçbiri' in sehir_selector:
 
@@ -162,9 +164,29 @@ if 'Hiçbiri' in sehir_selector:
 
 else:
 
-    il_datasi = data[data["sehir"].isin(sehir_selector)]
-    st.write(il_datasi)
+    il_datasi = data[data["sehir"] == (sehir_selector)]
+    ilceler = il_datasi.groupby(['sehir', 'ilce_genel', 'mahalle']).size().reset_index(name='Toplam')
+    tum_ilce = ilceler['ilce_genel'].values.tolist()
+    tum_total = ilceler['Toplam'].values.tolist()
 
+
+
+
+    
+    col1, col2, col3, col4 = st.columns([1,1,.2,2])
+
+    with col1:
+          d = pd.DataFrame(ilceler['ilce_genel'].unique())
+          d = d.set_axis(['Tüm İlçeler'], axis=1, inplace=False)
+          st.dataframe(d)
+
+    with col2:
+          m = pd.DataFrame(ilceler['mahalle'].unique())
+          m = m.set_axis(['Tüm Mahalleler'], axis=1, inplace=False)
+          st.dataframe(m)
+
+    with col4:
+        st.markdown(f"""<b>{sehir_selector}</b> iline ait toplam <b>{il_datasi['ilce_genel'].nunique()}</b> ilçe ve <b>{il_datasi['mahalle'].nunique()}</b> mahalle bilgisi mevcuttur.""", unsafe_allow_html=True)
     gauge_option1={
                     "tooltip": {
                         "formatter": "{a} <br/>{b} : {c}"
@@ -173,8 +195,9 @@ else:
                         {
                         "name": "Lahmacun Fiyati",
                         "type": "gauge",
+                        "itemStyle": {"color": '#A6373F'},
                         "detail": {
-                            "formatter": "{value}"
+                            "formatter": "{value} TL"
                         },
                         "data": [
                             {
@@ -193,9 +216,10 @@ else:
                     "series": [
                         {
                         "name": "Lahmacun Fiyati",
+                        "itemStyle": {"color": '#3C8D2F'},
                         "type": "gauge",
                         "detail": {
-                            "formatter": "{value}"
+                            "formatter": "{value} TL"
                         },
                         "data": [
                             {
@@ -214,9 +238,10 @@ else:
                     "series": [
                         {
                         "name": "Lahmacun Fiyati",
+                        "itemStyle": {"color": '#236A62'},
                         "type": "gauge",
                         "detail": {
-                            "formatter": "{value}"
+                            "formatter": "{value} TL"
                         },
                         "data": [
                             {
@@ -231,10 +256,30 @@ else:
 
     col1, col2, col3= st.columns([1,1,1])
     with col1:
-        st_echarts(options=gauge_option1, height='500px')
-    with col2:
         st_echarts(options=gauge_option2, height='500px')
-    with col3:
+
+    with col2:
         st_echarts(options=gauge_option3, height='500px')
 
+    with col3:
+        st_echarts(options=gauge_option1, height='500px')
 
+
+
+sehir_datasi = data[['sehir','ilce_genel','mahalle']]
+sehir_datasi['sehirler'] = 'sehirler'
+sehir_datasi = sehir_datasi[['sehirler', 'sehir', 'ilce_genel', 'mahalle']]
+#sehir_datasi = sehir_datasi.to_json()
+
+st.markdown("""<a href='https://github.com/dogudogru/ys_endeks/blob/main/yemeksepeti_nuts2.xlsx'>Veriyi bu linke tıklayarak indirebilirsiniz (View raw) </a>""", unsafe_allow_html=True)
+
+
+st.markdown('***')
+
+
+###### SIDEBAR
+
+image = Image.open('logo_yeni.png')
+st.sidebar.image(image=image)
+
+st.sidebar.subheader("Lahmacun Endeksi Nedir?")
