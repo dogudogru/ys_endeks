@@ -155,12 +155,11 @@ options_fiyat = {
 st_echarts(options=options_fiyat, height='500px')
 
 sehirler_list = data['sehir'].unique()
-sehirler_list = np.append(sehirler_list, 'Hiçbiri')
 sehir_selector = st.selectbox("Şehir seçiniz", options=sehirler_list)
     
-if 'Hiçbiri' in sehir_selector:
+if sehir_selector is None:
 
-    st.warning("""Veriyi görmek için şehir ekleyin ya da "Hiçbiri" seçeneğini çıkarın""") 
+    st.warning("""Veriyi görmek için şehir seçiniz""") 
 
 else:
 
