@@ -271,7 +271,7 @@ sehir_datasi['sehirler'] = 'sehirler'
 sehir_datasi = sehir_datasi[['sehirler', 'sehir', 'ilce_genel', 'mahalle']]
 #sehir_datasi = sehir_datasi.to_json()
 
-st.markdown("""<a href='https://github.com/dogudogru/ys_endeks/blob/main/yemeksepeti_nuts2.xlsx'>Veriyi bu linke tıklayarak indirebilirsiniz (View raw) </a>""", unsafe_allow_html=True)
+st.markdown("""<a href='https://github.com/dogudogru/ys_endeks/blob/main/ys_istanbul2.xlsx'>Veriyi bu linke tıklayarak indirebilirsiniz (View raw) </a>""", unsafe_allow_html=True)
 
 
 st.markdown('***')
