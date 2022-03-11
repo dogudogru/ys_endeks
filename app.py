@@ -108,7 +108,7 @@ ort_fiyat = ort_fiyat[['fiyat', 'ilce_genel']]
 options_fiyat = {
   "title": {
     "text": "Ortalama Lahmacun Fiyatı",
-    "subtext": f"En yüksek lahmacun fiyatına sahip ilçe: {round(ort_fiyat['fiyat'].max(),1)} TL ile {ort_fiyat['ilce_genel'].max()} oldu"
+    "subtext": f"En yüksek lahmacun fiyatına sahip ilçe: {round(ort_fiyat['fiyat'].max(),1)} TL ile Beşiktaş oldu"
   },
   "xAxis": {
     "data": ort_fiyat['ilce_genel'].values.tolist(),
