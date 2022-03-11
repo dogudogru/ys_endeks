@@ -11,7 +11,7 @@ st.subheader('Lahmacun Endeksi')
 
 @st.cache
 def get_data():
-    df = pd.read_excel('yemeksepeti_nuts2.xlsx')
+    df = pd.read_excel('ys_istanbul2.xlsx')
 
     return df
 
@@ -27,33 +27,33 @@ data['lezzet'] = data['lezzet'].apply(lambda x: float(x))
 data['indirimsiz'] = data['indirimsiz'].apply(lambda x: float(x))
 data['indirimli'] = data['indirimli'].apply(lambda x: float(x))
 data['fiyat'] = data['fiyat'].apply(lambda x: float(x))
-data['sehir_agirlik'] = data['sehir_agirlik'].apply(lambda x: float(x))
-data['sehir_agirlik_d'] = data['sehir_agirlik_d'].apply(lambda x: float(x))
+#data['sehir_agirlik'] = data['sehir_agirlik'].apply(lambda x: float(x))
+#data['sehir_agirlik_d'] = data['sehir_agirlik_d'].apply(lambda x: float(x))
 data[['ilce_genel', 'mahalle']] = data['ilce'].str.split('(', expand=True)
 data['mahalle'] = data['mahalle'].str.replace(")", "")
 
 
 
-components.html("""<iframe title="Bölgelere Göre Ortalama Lahmacun Fiyatı" aria-label="Map" id="datawrapper-chart-LtjAS" src="https://datawrapper.dwcdn.net/LtjAS/7/" scrolling="no" frameborder="0" style="width: 0; min-width: 100% !important; border: none;" height="433"></iframe><script type="text/javascript">!function(){"use strict";window.addEventListener("message",(function(e){if(void 0!==e.data["datawrapper-height"]){var t=document.querySelectorAll("iframe");for(var a in e.data["datawrapper-height"])for(var r=0;r<t.length;r++){if(t[r].contentWindow===e.source)t[r].style.height=e.data["datawrapper-height"][a]+"px"}}}))}();
-</script>
-              """, height=850,)
+# components.html("""<iframe title="Bölgelere Göre Ortalama Lahmacun Fiyatı" aria-label="Map" id="datawrapper-chart-LtjAS" src="https://datawrapper.dwcdn.net/LtjAS/7/" scrolling="no" frameborder="0" style="width: 0; min-width: 100% !important; border: none;" height="433"></iframe><script type="text/javascript">!function(){"use strict";window.addEventListener("message",(function(e){if(void 0!==e.data["datawrapper-height"]){var t=document.querySelectorAll("iframe");for(var a in e.data["datawrapper-height"])for(var r=0;r<t.length;r++){if(t[r].contentWindow===e.source)t[r].style.height=e.data["datawrapper-height"][a]+"px"}}}))}();
+# </script>
+#               """, height=850,)
 
 
 #Veri seti sehirlere gore toplam rakam
 
-sehir_data = data["sehir"].value_counts()
+sehir_data = data["ilce_genel"].value_counts()
 sehirler=pd.DataFrame(sehir_data)
 sehirler.reset_index(inplace=True)
-sehirler.columns=["Sehir", "Toplam Lahmacun"]
+sehirler.columns=["ilceler", "Toplam Lahmacun"]
 
 
 options_total = {
   "title": {
     "text": "Veri Seti - Toplam Çekilen Lahmacun Fiyatı Sayısı",
-    "subtext": f"{(sehirler['Sehir'][0])} şehrinde toplamda {sehirler['Toplam Lahmacun'][0]} fiyat bilgisi mevcut"
+    "subtext": f"{(sehirler['ilceler'][0])}ilçesinde toplamda {sehirler['Toplam Lahmacun'][0]} fiyat bilgisi mevcut"
   },
   "xAxis": {
-    "data": sehirler['Sehir'].values.tolist(),
+    "data": sehirler['ilceler'].values.tolist(),
     "axisLabel": {
       "inside": 'true',
       "color": "#fff",
@@ -100,18 +100,18 @@ st_echarts(options=options_total, height='500px')
 
 #Lahmacun Fiyatları Ortalama
 
-lah_fiyat = data.groupby("sehir").mean()
+lah_fiyat = data.groupby("ilce_genel").mean()
 lah_fiyat.reset_index(inplace=True)
 ort_fiyat = lah_fiyat.drop(columns=['hiz','lezzet','servis','indirimsiz','indirimli'])
-ort_fiyat = ort_fiyat[['fiyat', 'sehir']]
+ort_fiyat = ort_fiyat[['fiyat', 'ilce_genel']]
 
 options_fiyat = {
   "title": {
     "text": "Ortalama Lahmacun Fiyatı",
-    "subtext": f"En yüksek lahmacun fiyatına sahip şehir: {round(ort_fiyat['fiyat'].max(),1)} TL ile {ort_fiyat['sehir'].max()} oldu"
+    "subtext": f"En yüksek lahmacun fiyatına sahip ilçe: {round(ort_fiyat['fiyat'].max(),1)} TL ile {ort_fiyat['ilce_genel'].max()} oldu"
   },
   "xAxis": {
-    "data": ort_fiyat['sehir'].values.tolist(),
+    "data": ort_fiyat['ilce_genel'].values.tolist(),
     "axisLabel": {
       "inside": 'true',
       "color": "#fff",
@@ -185,6 +185,7 @@ else:
           st.dataframe(m)
 
     with col4:
+        st.dataframe(ilceler)
         st.markdown(f"""<b>{sehir_selector}</b> iline ait toplam <b>{il_datasi['ilce_genel'].nunique()}</b> ilçe ve <b>{il_datasi['mahalle'].nunique()}</b> mahalle bilgisi mevcuttur.""", unsafe_allow_html=True)
     gauge_option1={
                     "tooltip": {
